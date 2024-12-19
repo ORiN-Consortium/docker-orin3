@@ -1,7 +1,7 @@
 FROM ubuntu:24.04
 
 ARG TARGETARCH
-ENV APT_PATH=https://d3tdvt2nrvghqz.cloudfront.net/fa/iot/apt/
+ENV APT_PATH=https://packages.iot.fa.denso-wave.com/fa/iot/apt/
 ENV YQ_BINARY=yq_linux_$TARGETARCH
 
 RUN apt update
@@ -16,6 +16,7 @@ RUN apt install aspnetcore-runtime-8.0 -y
 RUN apt install orin3.remoteengine -y
 RUN apt clean
 
+COPY docker-entrypoint.sh /bin/ 
 COPY *.sh /bin/ 
 
 ENTRYPOINT ["docker-entrypoint.sh"]
