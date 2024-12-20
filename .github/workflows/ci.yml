@@ -36,4 +36,4 @@ jobs:
           context: "{{defaultContext}}:V1/ubuntu24.04"
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: densowave/orin3-remoteengine:latest,densowave/orin3-remoteengine:1.0.432
+          tags: densowave/orin3:latest,densowave/orin3:1.0.432
