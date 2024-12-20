@@ -33,7 +33,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          file: V1/ubuntu24.04/Dockerfile
+          context: V1/ubuntu24.04
           platforms: linux/amd64,linux/arm64
           push: true
           tags: pipelineservice/orin3-test:latest
