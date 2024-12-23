@@ -49,7 +49,7 @@ do
         escaped_pfx=$(echo $ep_pfx | escape_str)
         escaped_password=$(echo $ep_password | escape_str)
         command="$command --pfx \"$CONFIG_DIR/$escaped_pfx\" --password \"$escaped_password\""
-        if [ "$ep_client_auth" == "yes" ]
+        if [ "$ep_client_auth" = "yes" ]
         then
             command="$command --client-auth"
         fi
@@ -71,24 +71,24 @@ do
     ot_protocol=$(yq ".remote-engine.opentelemerties[$i].protocol // \"\"" $CONFIG_FILE)
 
     command="orin3.remoteengine ot add $ot_url"
-    if [ "$ot_metric" == "yes" ]
+    if [ "$ot_metric" = "yes" ]
     then
         command="$command -m"
     fi
-    if [ "$ot_log" == "yes" ]
+    if [ "$ot_log" = "yes" ]
     then
         command="$command -l"
     fi
-    if [ "$ot_trace" == "yes" ]
+    if [ "$ot_trace" = "yes" ]
     then
         command="$command -t"
     fi
     if [ ! -z "$ot_proxy" ]
     then
-        if [ "$ot_proxy" == "system" ]
+        if [ "$ot_proxy" = "system" ]
         then
             command="$command --use-system-proxy"
-        elif [ "$ot_proxy" == "none" ]
+        elif [ "$ot_proxy" = "none" ]
         then
             command="$command --no-proxy"
         else
@@ -169,7 +169,7 @@ do
         escaped_pfx=$(echo $manep_pfx | escape_str)
         escaped_password=$(echo $manep_password | escape_str)
         command="$command --pfx \"$CONFIG_DIR/$escaped_pfx\" --password \"$escaped_password\""
-        if [ "$manep_client_auth" == "yes" ]
+        if [ "$manep_client_auth" = "yes" ]
         then
             command="$command --client-auth"
         fi
