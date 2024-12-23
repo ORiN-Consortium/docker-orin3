@@ -111,11 +111,11 @@ then
 fi
 
 # provider(install)
-PROV_INSTALL_COUNT=$(yq ".remote-engine.provider.install_paths | length" $CONFIG_FILE)
+PROV_INSTALL_COUNT=$(yq ".remote-engine.provider.install-paths | length" $CONFIG_FILE)
 i=0
 while [ $i -lt $PROV_INSTALL_COUNT ]
 do
-    prov_install_file=$(yq ".remote-engine.provider.install_paths[$i].file" $CONFIG_FILE)
+    prov_install_file=$(yq ".remote-engine.provider.install-paths[$i].file" $CONFIG_FILE)
     escaped_file=$(echo $prov_install_file | escape_str)
     orin3.remoteengine prov install "$CONFIG_DIR/$escaped_file"
 
@@ -123,11 +123,11 @@ do
 done
 
 # provider(attach)
-PROV_ATTACH_COUNT=$(yq ".remote-engine.provider.attach_paths | length" $CONFIG_FILE)
+PROV_ATTACH_COUNT=$(yq ".remote-engine.provider.attach-paths | length" $CONFIG_FILE)
 i=0
 while [ $i -lt $PROV_ATTACH_COUNT ]
 do
-    prov_attach_path=$(yq ".remote-engine.provider.attach_paths[$i].path" $CONFIG_FILE)
+    prov_attach_path=$(yq ".remote-engine.provider.attach-paths[$i].path" $CONFIG_FILE)
     escaped_path=$(echo $prov_attach_path | escape_str)
     orin3.remoteengine prov attach "$escaped_path"
 
