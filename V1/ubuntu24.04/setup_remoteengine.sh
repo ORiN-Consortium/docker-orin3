@@ -48,8 +48,12 @@ do
     then
         escaped_pfx=$(echo $ep_pfx | escape_str)
         escaped_password=$(echo $ep_password | escape_str)
-        command="$command --pfx \"$CONFIG_DIR/$escaped_pfx\" --password \"$escaped_password\""
-        if [ "$ep_client_auth" = "yes" ]
+        case $escaped_pfx in
+            "/"*) pfx_path="$excaped_pfs";;
+             *) pfx_path="$CONFIG_DIR/$escaped_pfx";;
+        esac
+        command="$command --pfx \"$pfx_path\" --password \"$escaped_password\""
+        if [ "$ep_client_auth" = "true" ] || [ "$ep_client_auth" = "yes" ]
         then
             command="$command --client-auth"
         fi
@@ -71,15 +75,15 @@ do
     ot_protocol=$(yq ".remote-engine.opentelemerties[$i].protocol // \"\"" $CONFIG_FILE)
 
     command="orin3.remoteengine ot add $ot_url"
-    if [ "$ot_metric" = "yes" ]
+    if [ "$ot_metric" = "true"] || [ "$ot_metric" = "yes" ]
     then
         command="$command -m"
     fi
-    if [ "$ot_log" = "yes" ]
+    if [ "$ot_log" = "true"] || [ "$ot_log" = "yes" ]
     then
         command="$command -l"
     fi
-    if [ "$ot_trace" = "yes" ]
+    if [ "$ot_trace" = "true" ] || [ "$ot_trace" = "yes" ]
     then
         command="$command -t"
     fi
@@ -115,9 +119,12 @@ PROV_INSTALL_COUNT=$(yq ".remote-engine.provider.install-paths | length" $CONFIG
 i=0
 while [ $i -lt $PROV_INSTALL_COUNT ]
 do
-    prov_install_file=$(yq ".remote-engine.provider.install-paths[$i].file" $CONFIG_FILE)
+    prov_install_file=$(yq ".remote-engine.provider.install-paths[$i]" $CONFIG_FILE)
     escaped_file=$(echo $prov_install_file | escape_str)
-    orin3.remoteengine prov install "$CONFIG_DIR/$escaped_file"
+    case $escaped_file in
+        "/"*) orin3.remoteengine prov install "$prov_install_file";;
+       	*) orin3.remoteengine prov install "$CONFIG_DIR/$prov_install_file";;
+    esac
 
     i=$(($i+1))
 done
@@ -127,9 +134,12 @@ PROV_ATTACH_COUNT=$(yq ".remote-engine.provider.attach-paths | length" $CONFIG_F
 i=0
 while [ $i -lt $PROV_ATTACH_COUNT ]
 do
-    prov_attach_path=$(yq ".remote-engine.provider.attach-paths[$i].path" $CONFIG_FILE)
+    prov_attach_path=$(yq ".remote-engine.provider.attach-paths[$i]" $CONFIG_FILE)
     escaped_path=$(echo $prov_attach_path | escape_str)
-    orin3.remoteengine prov attach "$escaped_path"
+    case $escaped_file in
+       "/"*) orin3.remoteengine prov attach "$prov_attach_path";;
+       *) orin3.remoteengine prov attach "$CONFIG_DIR/$prov_attach_path";;
+    esac
 
     i=$(($i+1))
 done
@@ -168,8 +178,12 @@ do
     then
         escaped_pfx=$(echo $manep_pfx | escape_str)
         escaped_password=$(echo $manep_password | escape_str)
-        command="$command --pfx \"$CONFIG_DIR/$escaped_pfx\" --password \"$escaped_password\""
-        if [ "$manep_client_auth" = "yes" ]
+	case $escaped_pfx in
+            "/"*) pfx_path="$escaped_pfx";;
+            *) pfx_path="$CONFIG_DIR/$escaped_pfx";;
+        esac
+        command="$command --pfx \"$pfx_path\" --password \"$escaped_password\""
+        if [ "$manep_client_auth" = "true" ] || [ "$manep_client_auth" = "yes" ]
         then
             command="$command --client-auth"
         fi
