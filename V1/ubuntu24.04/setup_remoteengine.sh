@@ -75,11 +75,11 @@ do
     ot_protocol=$(yq ".remote-engine.opentelemerties[$i].protocol // \"\"" $CONFIG_FILE)
 
     command="orin3.remoteengine ot add $ot_url"
-    if [ "$ot_metric" = "true"] || [ "$ot_metric" = "yes" ]
+    if [ "$ot_metric" = "true" ] || [ "$ot_metric" = "yes" ]
     then
         command="$command -m"
     fi
-    if [ "$ot_log" = "true"] || [ "$ot_log" = "yes" ]
+    if [ "$ot_log" = "true" ] || [ "$ot_log" = "yes" ]
     then
         command="$command -l"
     fi
@@ -89,15 +89,11 @@ do
     fi
     if [ ! -z "$ot_proxy" ]
     then
-        if [ "$ot_proxy" = "system" ]
-        then
-            command="$command --use-system-proxy"
-        elif [ "$ot_proxy" = "none" ]
-        then
-            command="$command --no-proxy"
-        else
-            command="$command --proxy \"$ot_proxy\""
-        fi
+        case $ot_proxy in
+	    "system") command="$command --use-system-proxy";;
+	    "none") command="$command --no-proxy";;
+	    *) command="$command --proxy \"$ot_proxy\"";;
+        esac
     fi
     if [ ! -z "$ot_protocol" ]
     then
@@ -120,8 +116,7 @@ i=0
 while [ $i -lt $PROV_INSTALL_COUNT ]
 do
     prov_install_file=$(yq ".remote-engine.provider.install-paths[$i]" $CONFIG_FILE)
-    escaped_file=$(echo $prov_install_file | escape_str)
-    case $escaped_file in
+    case $prov_install_file in
         "/"*) orin3.remoteengine prov install "$prov_install_file";;
        	*) orin3.remoteengine prov install "$CONFIG_DIR/$prov_install_file";;
     esac
@@ -135,8 +130,7 @@ i=0
 while [ $i -lt $PROV_ATTACH_COUNT ]
 do
     prov_attach_path=$(yq ".remote-engine.provider.attach-paths[$i]" $CONFIG_FILE)
-    escaped_path=$(echo $prov_attach_path | escape_str)
-    case $escaped_file in
+    case $prov_attach_path in
        "/"*) orin3.remoteengine prov attach "$prov_attach_path";;
        *) orin3.remoteengine prov attach "$CONFIG_DIR/$prov_attach_path";;
     esac
