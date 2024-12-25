@@ -18,13 +18,13 @@ jobs:
     steps:
       - name: Get RemoteEngine version
         run: |
-          apt-get update
-          apt-get install curl gpg -y
+          sudo apt-get update
+          sudo apt-get install curl gpg -y
           APT_PATH=https://packages.iot.fa.denso-wave.com/fa/iot/apt/
-          curl -fsSL ${APT_PATH}public.key | gpg --dearmor -o /etc/apt/keyrings/dnwa.gpg
-          echo "deb [signed-by=/etc/apt/keyrings/dnwa.gpg] $APT_PATH stable main" | tee /etc/apt/sources.list.d/dnwa.list
-          apt-get update
-          VERSION=$(for word in $(apt-cache policy emacs | grep Candidate); do echo $word; done | head -n 2 | tail -n 1)
+          curl -fsSL ${APT_PATH}public.key | sudo gpg --dearmor -o /etc/apt/keyrings/dnwa.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/dnwa.gpg] $APT_PATH stable main" | sudo tee /etc/apt/sources.list.d/dnwa.list
+          sudo apt-get update
+          VERSION=$(for word in $(apt-cache policy orin3.remoteengine | grep Candidate); do echo $word; done | head -n 2 | tail -n 1)
           echo "REMOTEENGINE_VERSION=$VERSION" >> $GITHUB_ENV
           
       - name: Login to Docker Hub
