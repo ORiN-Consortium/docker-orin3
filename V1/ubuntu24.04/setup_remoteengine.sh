@@ -48,8 +48,8 @@ do
     then
         escaped_pfx=$(echo $ep_pfx | escape_str)
         escaped_password=$(echo $ep_password | escape_str)
-        case $escaped_pfx in
-            "/"*) pfx_path="$excaped_pfs";;
+        case "$escaped_pfx" in
+            "/"*) pfx_path="$escaped_pfx";;
              *) pfx_path="$CONFIG_DIR/$escaped_pfx";;
         esac
         command="$command --pfx \"$pfx_path\" --password \"$escaped_password\""
@@ -89,7 +89,7 @@ do
     fi
     if [ ! -z "$ot_proxy" ]
     then
-        case $ot_proxy in
+        case "$ot_proxy" in
 	    "system") command="$command --use-system-proxy";;
 	    "none") command="$command --no-proxy";;
 	    *) command="$command --proxy \"$ot_proxy\"";;
@@ -116,7 +116,7 @@ i=0
 while [ $i -lt $PROV_INSTALL_COUNT ]
 do
     prov_install_file=$(yq ".remote-engine.provider.install-paths[$i]" $CONFIG_FILE)
-    case $prov_install_file in
+    case "$prov_install_file" in
         "/"*) orin3.remoteengine prov install "$prov_install_file";;
        	*) orin3.remoteengine prov install "$CONFIG_DIR/$prov_install_file";;
     esac
@@ -130,7 +130,7 @@ i=0
 while [ $i -lt $PROV_ATTACH_COUNT ]
 do
     prov_attach_path=$(yq ".remote-engine.provider.attach-paths[$i]" $CONFIG_FILE)
-    case $prov_attach_path in
+    case "$prov_attach_path" in
        "/"*) orin3.remoteengine prov attach "$prov_attach_path";;
        *) orin3.remoteengine prov attach "$CONFIG_DIR/$prov_attach_path";;
     esac
@@ -172,15 +172,11 @@ do
     then
         escaped_pfx=$(echo $manep_pfx | escape_str)
         escaped_password=$(echo $manep_password | escape_str)
-	case $escaped_pfx in
+	case "$escaped_pfx" in
             "/"*) pfx_path="$escaped_pfx";;
             *) pfx_path="$CONFIG_DIR/$escaped_pfx";;
         esac
         command="$command --pfx \"$pfx_path\" --password \"$escaped_password\""
-        if [ "$manep_client_auth" = "true" ] || [ "$manep_client_auth" = "yes" ]
-        then
-            command="$command --client-auth"
-        fi
     fi
     eval $command
     i=$(($i+1))

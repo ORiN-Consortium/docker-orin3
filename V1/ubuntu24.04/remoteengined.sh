@@ -22,11 +22,13 @@ set -e
 
 setup_remoteengine.sh
 
-if [ -z "$@" ]
+COMMAND="$@"
+
+if [ -z "$COMMAND" ]
 then
     orin3.remoteengine start
 else
-    $@
+    eval $COMMAND
 fi
 
 wait $REMOTE_ENGINE_PID
