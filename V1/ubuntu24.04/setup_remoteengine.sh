@@ -221,7 +221,7 @@ LICENSE_COUNT=$(yq ".remote-engine.licenses | length" $CONFIG_FILE)
 i=0
 while [ $i -lt $LICENSE_COUNT ]
 do
-    lic_key=$(yq ".remote-engine.authorities[$i].key" $CONFIG_FILE)
+    lic_key=$(yq ".remote-engine.licenses[$i].key" $CONFIG_FILE)
 
     orin3.remoteengine lic activate $lic_key
     i=$(($i+1))
