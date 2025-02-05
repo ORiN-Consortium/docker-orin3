@@ -5,7 +5,7 @@ ENV APT_PATH=https://packages.iot.fa.denso-wave.com/fa/iot/apt/
 ENV YQ_BINARY=yq_linux_$TARGETARCH
 
 RUN apt update
-RUN apt dist-upgrade
+RUN apt dist-upgrade -y
 RUN apt install curl gpg wget -y
 RUN wget https://github.com/mikefarah/yq/releases/latest/download/$YQ_BINARY -O /usr/bin/yq &&\
     chmod +x /usr/bin/yq
