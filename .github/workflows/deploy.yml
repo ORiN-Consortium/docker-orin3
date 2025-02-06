@@ -18,13 +18,14 @@ jobs:
     steps:
       - name: Get RemoteEngine version
         run: |
-          sudo apt-get update
-          sudo apt-get install curl gpg -y
-          APT_PATH=https://packages.iot.fa.denso-wave.com/fa/iot/apt/
-          curl -fsSL ${APT_PATH}public.key | sudo gpg --dearmor -o /etc/apt/keyrings/dnwa.gpg
-          echo "deb [signed-by=/etc/apt/keyrings/dnwa.gpg] $APT_PATH stable main" | sudo tee /etc/apt/sources.list.d/dnwa.list
-          sudo apt-get update
-          VERSION=$(for word in $(apt-cache policy orin3.remoteengine | grep Candidate); do echo $word; done | head -n 2 | tail -n 1)
+          #sudo apt-get update
+          #sudo apt-get install curl gpg -y
+          #APT_PATH=https://packages.iot.fa.denso-wave.com/fa/iot/apt/
+          #curl -fsSL ${APT_PATH}public.key | sudo gpg --dearmor -o /etc/apt/keyrings/dnwa.gpg
+          #echo "deb [signed-by=/etc/apt/keyrings/dnwa.gpg] $APT_PATH stable main" | sudo tee /etc/apt/sources.list.d/dnwa.list
+          #sudo apt-get update
+          #VERSION=$(for word in $(apt-cache policy orin3.remoteengine | grep Candidate); do echo $word; done | head -n 2 | tail -n 1)
+          VERSION=1.0.426
           echo "REMOTEENGINE_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Show tag name
@@ -48,4 +49,4 @@ jobs:
           context: "{{defaultContext}}:V1/ubuntu24.04"
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: densowave/orin3:${{ env.REMOTEENGINE_VERSION }},densowave/orin3:latest
+          tags: densowave/orin3:${{ env.REMOTEENGINE_VERSION }}
