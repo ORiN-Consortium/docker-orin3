@@ -10,6 +10,10 @@ escape_str () {
 
 if [ ! -f $CONFIG_FILE ]
 then
+    if [ ! -z $REMOTEENGINE_PASSWORD ]
+    then
+        orin3.remoteengine changepassword -n "$REMOTEENGINE_PASSWORD"
+    fi
     exit 0
 fi
 
@@ -41,7 +45,7 @@ do
     ep_port=$(yq ".remote-engine.endpoints[$i].port" $CONFIG_FILE)
     ep_pfx=$(yq ".remote-engine.endpoints[$i].pfx // \"\"" $CONFIG_FILE)
     ep_password=$(yq ".remote-engine.endpoints[$i].password // \"\"" $CONFIG_FILE)
-    ep_client_auth=$(yq ".remote-engine.endpoints[$i].cleint-auth // \"\"" $CONFIG_FILE)
+    ep_client_auth=$(yq ".remote-engine.endpoints[$i].client-auth // \"\"" $CONFIG_FILE)
 
     command="orin3.remoteengine ep add $ep_ip --port $ep_port"
     if [ ! -z "$ep_pfx" ]
