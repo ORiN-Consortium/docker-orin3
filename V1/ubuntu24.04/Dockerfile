@@ -13,7 +13,7 @@ RUN curl -fsSL ${APT_PATH}public.key | gpg --dearmor -o /etc/apt/keyrings/dnwa.g
 RUN echo "deb [signed-by=/etc/apt/keyrings/dnwa.gpg] $APT_PATH stable main" | tee /etc/apt/sources.list.d/dnwa.list
 RUN apt update
 RUN apt install aspnetcore-runtime-8.0 -y
-RUN apt install orin3.remoteengine -y
+RUN apt install orin3.remoteengine=1.1.2 -y
 RUN apt clean
 
 COPY docker-entrypoint.sh /bin/ 
