@@ -3,16 +3,10 @@ set -e
 
 CONFIG_DIR=/config
 CONFIG_FILE=$CONFIG_DIR/remoteengine.yml
-INITIALIZED_FLAG=/dev/shm/.orin3_initialized_$$
 
 escape_str () {
     sed 's/"/\\"/g' | sed 's/\$/\\\$/g'
 }
-
-if [ -f $INITIALIZED_FLAG ]
-then
-    exit 0
-fi
 
 if [ ! -f $CONFIG_FILE ]
 then
@@ -20,7 +14,6 @@ then
     then
         orin3.remoteengine changepassword -n "$REMOTEENGINE_PASSWORD"
     fi
-    touch $INITIALIZED_FLAG
     exit 0
 fi
 
@@ -237,5 +230,3 @@ do
     orin3.remoteengine lic activate $lic_key
     i=$(($i+1))
 done
-
-touch $INITIALIZED_FLAG
