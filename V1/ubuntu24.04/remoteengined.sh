@@ -20,15 +20,19 @@ done
 
 set -e
 
-setup_remoteengine.sh
+INITIALIZED_FLAG=/var/tmp/.orin3_setup_done
 
-COMMAND="$@"
-
-if [ -z "$COMMAND" ]
+if [ ! -f $INITIALIZED_FLAG ]
 then
-    orin3.remoteengine start
-else
-    eval $COMMAND
+    setup_remoteengine.sh
+    COMMAND="$@"
+    if [ -z "$COMMAND" ]
+    then
+        orin3.remoteengine start
+    else
+        eval $COMMAND
+    fi
+    touch $INITIALIZED_FLAG
 fi
 
 wait $REMOTE_ENGINE_PID
