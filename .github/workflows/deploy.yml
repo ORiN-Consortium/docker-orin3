@@ -1,16 +1,23 @@
 # This is a basic workflow to help you get started with Actions
-
 name: Deploy
-
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   #push:
   #  branches: [ "main" ]
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
+    inputs:
+      Version:
+        description: 'RemoteEngine apt version. If empty, the Candidate version is used (existing behavior).'
+        required: false
+        type: string
+        default: ''
+      UpdateLatest:
+        description: 'Whether to update the `latest` tag.'
+        required: false
+        type: boolean
+        default: true
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   docker:
@@ -24,28 +31,40 @@ jobs:
           curl -fsSL ${APT_PATH}public.key | sudo gpg --dearmor -o /etc/apt/keyrings/dnwa.gpg
           echo "deb [signed-by=/etc/apt/keyrings/dnwa.gpg] $APT_PATH stable main" | sudo tee /etc/apt/sources.list.d/dnwa.list
           sudo apt-get update
-          VERSION=$(for word in $(apt-cache policy orin3.remoteengine | grep Candidate); do echo $word; done | head -n 2 | tail -n 1)
+          if [ -n "${{ inputs.Version }}" ]; then
+            VERSION="${{ inputs.Version }}"
+            if ! apt-cache madison orin3.remoteengine | awk '{print $3}' | grep -Fxq "$VERSION"; then
+              echo "::error::Specified version '$VERSION' not found in apt repository."
+              apt-cache madison orin3.remoteengine
+              exit 1
+            fi
+          else
+            VERSION=$(for word in $(apt-cache policy orin3.remoteengine | grep Candidate); do echo $word; done | head -n 2 | tail -n 1)
+          fi
           echo "REMOTEENGINE_VERSION=$VERSION" >> $GITHUB_ENV
-
+      - name: Compose tags
+        id: tags
+        run: |
+          TAGS="densowave/orin3:${{ env.REMOTEENGINE_VERSION }}"
+          if [ "${{ inputs.UpdateLatest }}" = "true" ]; then
+            TAGS="$TAGS,densowave/orin3:latest"
+          fi
+          echo "tags=$TAGS" >> $GITHUB_OUTPUT
       - name: Show tag name
-        run: echo densowave/orin3:${{ env.REMOTEENGINE_VERSION }}
-
+        run: echo "${{ steps.tags.outputs.tags }}"
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASS }}
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: "{{defaultContext}}:V1/ubuntu24.04"
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: densowave/orin3:${{ env.REMOTEENGINE_VERSION }},densowave/orin3:latest
+          tags: ${{ steps.tags.outputs.tags }}
