@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       Version:
-        description: 'RemoteEngine apt version. If empty, the Candidate version is used (existing behavior).'
+        description: 'RemoteEngine apt version. If empty, the Candidate version is used.'
         required: false
         type: string
         default: ''
