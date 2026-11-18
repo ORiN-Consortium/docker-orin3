@@ -66,17 +66,18 @@ do
     i=$(($i+1))
 done
 
-# opentelemetry
-OPENTELEMETRY_COUNT=$(yq ".remote-engine.opentelemetries | length" $CONFIG_FILE)
+# opentelemetry (support legacy typo 'opentelemerties' for backward compatibility)
+OPENTELEMETRY_EXPR="((.remote-engine.opentelemetries // []) + (.remote-engine.opentelemerties // []))"
+OPENTELEMETRY_COUNT=$(yq "$OPENTELEMETRY_EXPR | length" $CONFIG_FILE)
 i=0
 while [ $i -lt $OPENTELEMETRY_COUNT ]
 do
-    ot_url=$(yq ".remote-engine.opentelemetries[$i].url" $CONFIG_FILE)
-    ot_metric=$(yq ".remote-engine.opentelemetries[$i].metric" $CONFIG_FILE)
-    ot_log=$(yq ".remote-engine.opentelemetries[$i].log" $CONFIG_FILE)
-    ot_trace=$(yq ".remote-engine.opentelemetries[$i].trace" $CONFIG_FILE)
-    ot_proxy=$(yq ".remote-engine.opentelemetries[$i].proxy // \"\"" $CONFIG_FILE)
-    ot_protocol=$(yq ".remote-engine.opentelemetries[$i].protocol // \"\"" $CONFIG_FILE)
+    ot_url=$(yq "$OPENTELEMETRY_EXPR[$i].url" $CONFIG_FILE)
+    ot_metric=$(yq "$OPENTELEMETRY_EXPR[$i].metric" $CONFIG_FILE)
+    ot_log=$(yq "$OPENTELEMETRY_EXPR[$i].log" $CONFIG_FILE)
+    ot_trace=$(yq "$OPENTELEMETRY_EXPR[$i].trace" $CONFIG_FILE)
+    ot_proxy=$(yq "$OPENTELEMETRY_EXPR[$i].proxy // \"\"" $CONFIG_FILE)
+    ot_protocol=$(yq "$OPENTELEMETRY_EXPR[$i].protocol // \"\"" $CONFIG_FILE)
 
     command="orin3.remoteengine ot add $ot_url"
     if [ "$ot_metric" = "true" ] || [ "$ot_metric" = "yes" ]
